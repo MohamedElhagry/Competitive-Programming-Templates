@@ -19,14 +19,16 @@ vi odd_manacher(string &s) {
 
 pair<vi, vi > manacher(string &s) {
     string t;
-    int n = s.size();
-    for (auto e:s){
+    int n = (int) s.size();
+    for (auto e:s) {
         t.pb('#');
         t.pb(e);
     }
     t += "#";
     vi res = odd_manacher(t);
     vi dOdd(n), dEven(n);
+    
+    //dEven[i] = len of longest even pal. centered around i (i is the right middle character)
     for (int i = 0; i < n; i++) {
         dOdd[i] = res[2 * i + 1] / 2;
         dEven[i] = (res[2 * i] - 1) / 2;
