@@ -1,0 +1,1 @@
+Distance from Point (x_o, y_o) to line with equation Ax + By + C is (A x_o + B y_o + C)/ sqrt(A^2 + B^2)
