@@ -1,4 +1,6 @@
 const long double PI = acos(-1);
+//use long long whenever you can, so that you
+//do not have to deal with precision errors
 typedef long double C;
 typedef complex<C> P;
 #define X real()
@@ -38,4 +40,19 @@ long double getDistSegs(P s1, P s2, P r1, P r2) {
     if ( cp(s2-s1,r1-s2)*cp(s2-s1,r2-s2) < 0 && cp(r2-r1,s1-r2)*cp(r2-r1,s2-r2) < 0)
         ans = 0;
     return ans;
+}
+
+bool isPointOnRay(P x, P a, P b){
+    if(x == a || x == b) return true;
+    return cp(a-x, b-a) == 0 && dot(b-a, x-a) > 0;
+}
+
+bool isPointOnSeg(P x, P a, P b){
+    if(x == a || x == b) return true;
+    return cp(a-x, b-a) == 0 && dot(b-a, x-a) > 0 && dot(a-b,x-b) > 0;
+}
+
+//only works if not both are collinear
+bool sameSide(P x, P y, P a, P b){
+    return cp(b-a, x-b) * cp(b-a, y-b) > 0;
 }
