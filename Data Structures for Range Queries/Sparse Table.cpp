@@ -1,24 +1,25 @@
-const int N = 1e5 + 5;
-const int K = 19;
-int a[N], mn[K][N], bigPow[N], n;
+template<typename T, class CMP = function<T(const T &, const T &)>>
+class SparseTable {
+public:
+    int n;
+    vector<vector<T>> sp;
+    CMP func;
 
-void con() {
-    for (int k = 0; k < K; k++) {
-        for (int i = 0; i + (1 << k) - 1 < n; i++) {
-            if (k == 0)
-                mn[k][i] = a[i];
-            else
-                mn[k][i] = min(mn[k - 1][i], mn[k - 1][i + (1 << (k - 1))]);
+    SparseTable(const vector<T> &a, const CMP &f) : func(f) {
+        n = static_cast<int>(a.size());
+        int max_log = 32 - __builtin_clz(n);
+        sp.resize(max_log);
+        sp[0] = a;
+        for (int j = 1; j < max_log; ++j) {
+            sp[j].resize(n - (1 << j) + 1);
+            for (int i = 0; i <= n - (1 << j); ++i) {
+                sp[j][i] = func(sp[j - 1][i], sp[j - 1][i + (1 << (j - 1))]);
+            }
         }
     }
 
-    for(int i=2; i<=n; i++)
-        bigPow[i] = bigPow[i/2]+1;
-}
-
-int query(int l, int r) {
-    int len = r - l + 1;
-    int k = bigPow[len];
-
-    return min(mn[k][l], mn[k][r - (1 << k) + 1]);
-}
+    T get(int l, int r) const {
+        int lg = 32 - __builtin_clz(r - l + 1) - 1;
+        return func(sp[lg][l], sp[lg][r - (1 << lg) + 1]);
+    }
+};
