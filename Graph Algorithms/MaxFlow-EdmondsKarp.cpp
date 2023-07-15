@@ -44,3 +44,9 @@ ll edmondsKarp(int src, int sink){
     }
     return flow;
 }
+
+void addEdge(int u, int v, int edgeCap){
+    adj[u].pb(v);
+    adj[v].pb(u);
+    cap[u][v] = edgeCap;
+}
