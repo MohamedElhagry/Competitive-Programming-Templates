@@ -1,33 +1,25 @@
-int mod;
-vvi idn;
+vector <vector<ll>> IDN;
 
-vvi mul(vvi &v1, vvi &v2) {
+vector <vector<ll>> mul(vector <vector<ll>> &v1, vector <vector<ll>> &v2) {
     int n = v1.size(), m = v2[0].size();
-    vvi prod = vvi(n, vector<ll>(m));
-
+    vector <vector<ll>> prod(n, vector<ll>(m));
     int iters = v1[0].size();
-
-    FOR(i, 0, n) {
-        FOR(j, 0, m) {
-            FOR(k, 0, iters) {
-                prod[i][j] += v1[i][k] * v2[k][j] % mod;
-                prod[i][j] %= mod;
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < m; ++j) {
+            for (int k = 0; k < iters; ++k) {
+                (prod[i][j] += v1[i][k] * v2[k][j] % MOD) %= MOD;
             }
         }
     }
-
     return prod;
 }
 
-vvi fastPowMats(vvi a, int n) {
-    if (n == 0)
-        return idn;
-
-    vvi rest = fastPowMats(a, n / 2);
-    rest = mul(rest, rest);
-    if (n & 1)
-        rest = mul(rest, a);
-
-    return rest;
+vector <vector<ll>> fastPowMats(vector <vector<ll>> &a, int n) {
+    if (n == 0) 
+        return IDN;
+    vector <vector<ll>> res = fastPowMats(a, n / 2);
+    res = mul(res, res);
+    if (n & 1) 
+        res = mul(res, a);
+    return res;
 }
-
