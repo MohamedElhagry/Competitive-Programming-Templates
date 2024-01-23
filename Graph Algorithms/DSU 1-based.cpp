@@ -1,32 +1,30 @@
-struct DSU{
-    vi par, sz;
+struct DSU {
+    int n, comps;
+    vector<int> sz, par;
 
     DSU(int n) {
-        par.resize(n + 1);
+        this->n = n;
+        comps = n;
         sz.resize(n + 1);
-        loop(i, 1, n) {
-            par[i] = i;
+        par.resize(n + 1);
+        for (int i = 1; i <= n; ++i) {
             sz[i] = 1;
+            par[i] = i;
         }
     }
 
-    int find(int a)
-    {
-        if(a == par[a])
-            return a;
-        return find(par[a]);
+    int find(int x) {
+        if (par[x] == x) return x;
+        return find(par[x]);
     }
-    
-    void unite(int a, int b)
-    {
-        a = find(a);
-        b = find(b);
-        if(a == b)
-            return;
-        
-        if(sz[a] > sz[b])
-            swap(a,b);
-        par[a] = b;
-        sz[b] += sz[a];
+
+    bool unite(int a, int b) {
+        a = find(a), b = find(b);
+        if (a == b) return false;
+        if (sz[a] < sz[b]) swap(a, b);
+        par[b] = a;
+        sz[a] += sz[b];
+        comps--;
+        return true;
     }
-};
+}; 

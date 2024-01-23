@@ -1,37 +1,41 @@
-vi odd_manacher(string &s) {
-    string t = '$' + s + '#';
-    int n = s.size(), l = 1, r = 1;
-    vi d(n + 2);
-    for (int i = 1; i <= n; i++) {
-        int &len = d[i];
-        int j = l + r - i;
-        len = max(0, min(r - i, d[j]));
-        while (t[i - len] == t[i + len])
+vi manacher_odd(string& s) {
+    int n = s.size();
+
+    string t = '^' + s  + '$';
+    vi p(n+2);
+    int l = 1, r = 1;
+    for (int i = 1; i <= n; ++i) {
+        int &len = p[i];
+        int j = l + r-i;
+        len = max(0, min(r - i, p[j]));
+
+        while (t[i + len] == t[i - len])
             ++len;
 
-        if (i + len > r) {
-            l = i - len;
+        if(i + len > r){
             r = i + len;
+            l = i - len;
         }
     }
-    return vi(d.begin() + 1, d.begin() + n + 1);
+
+    return vi(p.begin() + 1, p.begin() + n + 1);
 }
 
-pair<vi, vi > manacher(string &s) {
+vector<pi> manacher(string& s){
+    int n = (int)s.size();
     string t;
-    int n = (int) s.size();
-    for (auto e:s) {
+    for(int i=0; i<n; ++ i){
         t.pb('#');
-        t.pb(e);
+        t.pb(s[i]);
     }
-    t += "#";
-    vi res = odd_manacher(t);
-    vi dOdd(n), dEven(n);
-    
-    //dEven[i] = len of longest even pal. centered around i (i is the right middle character)
-    for (int i = 0; i < n; i++) {
-        dOdd[i] = res[2 * i + 1] / 2;
-        dEven[i] = (res[2 * i] - 1) / 2;
+    t.pb('#');
+
+    vi p = manacher_odd(t);
+    vector<pi> ret(n);
+    //odd then even
+    for(int i=0; i<n; ++i){
+        ret[i].F = (p[2*i+1])/2;
+        ret[i].S = (p[2*i]-1)/2;
     }
-    return {dOdd, dEven};
+    return ret;
 }

@@ -1,35 +1,35 @@
 struct Edge {
     int to;
-    int cost;
+    ll cost;
     int cap, flow, backEdge;
 };
- 
+
 struct MCMF
 {
- 
+
     const int inf = 1000000010;
     int n;
     vector<vector<Edge>> g;
- 
+
     MCMF(int _n) {
         n = _n + 1;
         g.resize(n);
     }
- 
-    void addEdge(int u, int v, int cap, int cost) {
+
+    void addEdge(int u, int v, int cap, ll cost) {
         Edge e1 = {v, cost, cap, 0, (int) g[v].size()};
         Edge e2 = {u, -cost, 0, 0, (int) g[u].size()};
         g[u].push_back(e1);
         g[v].push_back(e2);
     }
- 
-    pair<ll, int> minCostMaxFlow(int s, int t,int k) {
+
+    pair<ll, int> minCostMaxFlow(int s, int t) {
         int flow = 0;
         ll cost = 0;
         vector<int> state(n), from(n), from_edge(n);
         vector<ll> d(n);
         deque<int> q;
-        while (flow < k) {
+        while (true) {
             for (int i = 0; i < n; i++)
                 state[i] = 2, d[i] = OO, from[i] = -1;
             state[s] = 1;
@@ -63,7 +63,6 @@ struct MCMF
                               - g[from[it]][from_edge[it]].flow);
                 it = from[it];
             }
-            addflow = min(addflow,k - flow);
             it = t;
             while (it != s) {
                 g[from[it]][from_edge[it]].flow += addflow;

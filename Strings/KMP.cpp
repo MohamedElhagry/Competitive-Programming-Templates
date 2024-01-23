@@ -1,5 +1,5 @@
 void KMP(string &s, vi &fail) {
-    n = (int) s.size();
+    int n = (int) s.size();
     for (int i = 1; i < n; i++) {
         int j = fail[i - 1];
         while (j > 0 && s[j] != s[i])
@@ -11,6 +11,7 @@ void KMP(string &s, vi &fail) {
 }
 
 void constructAut(string &s, vi &fail) {
+    int n = s.size();
     // for each fail function value (i is not an index)
     for (int i = 0; i < n; i++) {
         // for each each possible transition
