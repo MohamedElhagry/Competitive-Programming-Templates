@@ -83,33 +83,33 @@ struct SCC {
 struct TwoSat {
     int N;
     vpi edges;
-
+ 
     void init(int _N) {
         N = _N;
     }
-
+ 
     int addVar() { return N++; }
-
+ 
     // x or y, edges will be refined in the end
     void either(int x, int y) {
         x = max(2 * x, -1 - 2 * x);
         y = max(2 * y, -1 - 2 * y);
         edges.pb({x, y});
     }
-
+ 
     void implies(int x, int y) {
         either(~x, y);
     }
-
+ 
     void must(int x) {
         either(x, x);
     }
-
+ 
     void XOR(int x, int y) {
         either(x, y);
         either(~x, ~y);
     }
-
+ 
     // void atMostOne exists in kactl
     vb solve(int _N = -1) {
         if (_N != -1) N = _N;
@@ -123,15 +123,10 @@ struct TwoSat {
         for (int i = 0; i < 2 * N; ++i) {
             if (scc.compOf[i] == scc.compOf[i ^ 1])return {};
         }
-        vvi comps = scc.comps;
-        reverse(all(comps));
-        vi compOf(2 * N);
-        for (int i = 0; i < comps.size(); ++i) {
-            for (auto e:comps[i])
-                compOf[e] = i;
-        }
+        vvi &comps = scc.comps;
+        vi &compOf = scc.compOf;
         vi tmp(comps.size());
-        for (int i = 0; i < comps.size(); ++i) {
+        for (int i = comps.size()-1; ~i; --i) {
             if (!tmp[i]) {
                 tmp[i] = 1;
                 for (auto e:comps[i])
