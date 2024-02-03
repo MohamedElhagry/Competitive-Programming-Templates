@@ -1,67 +1,57 @@
-using vd = valarray<complex<double>>;
-using cd = complex<double>;
 
+using cd = complex<double>;
 const double PI = acos(-1);
 
-int reverse(int x, int lg){
-    int res = 0;
-    for(int i=0; i<lg; ++i){
-        if(x & (1 << i))
-            res |= 1 << (lg-1-i);
-    }
-    return res;
-}
+void fft(vector<cd> &a, bool invert) {
+    int n = a.size();
 
-vd FFT(vd& a, bool inv = false) {
-    int m = a.size();
-    int lg = 0;
-    while((1 << lg) < m)
-        ++lg;
+    for (int i = 1, j = 0; i < n; i++) {
+        int bit = n >> 1;
+        for (; j & bit; bit >>= 1)
+            j ^= bit;
+        j ^= bit;
 
-    for(int i=0; i<m; ++i){
-        if(i < reverse(i, lg))
-            swap(a[i], a[reverse(i, lg)]);
+        if (i < j)
+            swap(a[i], a[j]);
     }
 
-    for(int len = 2; len <= m; len <<= 1){
-        cd omg = exp(complex<double>(0, 2*PI/len * (inv ? -1:1)));
-        for(int i=0; i<m; i += len){
-            cd curOmg = 1;
-            for(int j=0; j<len/2; ++j){
-                cd e = a[i + j], o = a[i + j + len/2] * curOmg;
-                a[i + j] = e + o;
-                a[i + j + len/2] = e - o;
-                curOmg *= omg;
+    for (int len = 2; len <= n; len <<= 1) {
+        double ang = 2 * PI / len * (invert ? -1 : 1);
+        cd wlen(cos(ang), sin(ang));
+        for (int i = 0; i < n; i += len) {
+            cd w(1);
+            for (int j = 0; j < len / 2; j++) {
+                cd u = a[i + j], v = a[i + j + len / 2] * w;
+                a[i + j] = u + v;
+                a[i + j + len / 2] = u - v;
+                w *= wlen;
             }
         }
     }
-    return a;
-}
 
-vd IFFT(vd& a) {
-    vd ret = FFT(a, true);
-    double m = a.size();
-    ret /= m;
-    return ret;
-}
-
-vector<ll> mul(vector<ll> const &a, vector<ll> const &b) {
-    int m = 1;
-    while (m < a.size() + b.size())
-        m <<= 1;
-    vd A(m), B(m);
-    for (int i = 0; i < m; ++i) {
-        if (i < a.size()) A[i] = a[i];
-        if (i < b.size()) B[i] = b[i];
+    if (invert) {
+        for (cd &x: a)
+            x /= n;
     }
-
-    A = FFT(A);
-    B = FFT(B);
-    vd C = A * B;
-    C = IFFT(C);
-
-    vector<ll> ret(m);
-    for (int i = 0; i < m; ++i)
-        ret[i] = round(C[i].real());
-    return ret;
 }
+
+vl multiply(vl const &a, vl const &b) {
+    vector<cd> fa(a.begin(), a.end()), fb(b.begin(), b.end());
+    int n = 1;
+    while (n < a.size() + b.size())
+        n <<= 1;
+    fa.resize(n);
+    fb.resize(n);
+
+    fft(fa, false);
+    fft(fb, false);
+    for (int i = 0; i < n; i++)
+        fa[i] *= fb[i];
+    fft(fa, true);
+
+    vl result(n);
+    for (int i = 0; i < n; i++)
+        result[i] = round(fa[i].real());
+    return result;
+}
+
