@@ -1,0 +1,2 @@
+For fast NTT or NTT with arbitrary moduli , look at MIT kactl.
+For all other FFT needs, look at KTH kactl.
