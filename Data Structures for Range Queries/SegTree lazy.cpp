@@ -1,25 +1,23 @@
-const int OO = 1e9 + 5;
-const int N = 2e5 + 5;
-const ll IDN = OO, LAZY_IDN = 0;
-
 struct SegTree {
     vector <ll> tree;
     vector <ll> lazy;
     int n;
+    const ll IDN = OO;
+    const ll LAZY_IDN = 0;
 
-    ll combine(ll a, ll b) {
-        return min(a, b);
+    ll combine(ll a, ll b) { 
+        return min(a, b); 
     }
 
-    void build(int inputN, ll *a) {
+    void build(int inputN, const vector<ll>& a) {
         n = inputN;
-        if (__builtin_popcount(n) != 1)
+        if (__builtin_popcount(n) != 1) 
             n = 1 << (__lg(n) + 1);
         tree.resize(n << 1, IDN);
         lazy.resize(n << 1, LAZY_IDN);
-        for (int i = 0; i < inputN; i++)
+        for (int i = 0; i < inputN; i++) 
             tree[i + n] = a[i];
-        for (int i = n - 1; i >= 1; i--)
+        for (int i = n - 1; i >= 1; i--) 
             tree[i] = combine(tree[i << 1], tree[i << 1 | 1]);
     }
 
@@ -42,7 +40,7 @@ struct SegTree {
             propagate(k, sl, sr);
             return;
         }
-
+        
         int mid = (sl + sr) / 2;
         update(ql, qr, v, k << 1, sl, mid);
         update(ql, qr, v, (k << 1) | 1, mid + 1, sr);
@@ -53,10 +51,18 @@ struct SegTree {
         propagate(k, sl, sr);
         if (qr < sl || sr < ql || ql > qr) return IDN;
         if (ql <= sl && qr >= sr) return tree[k];
-
+        
         int mid = (sl + sr) / 2;
         ll left = query(ql, qr, k << 1, sl, mid);
         ll right = query(ql, qr, k << 1 | 1, mid + 1, sr);
         return combine(left, right);
+    }
+    
+    void update(int ql, int qr, ll v){
+        update(ql, qr, v, 1, 0, n-1);
+    }
+    
+    ll query(int ql, int qr){
+        return query(ql, qr, 1, 0, n-1);
     }
 };
