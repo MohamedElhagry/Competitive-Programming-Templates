@@ -12,22 +12,13 @@ void preSize(int i, int par) {
     }
 }
 
-int getCen(int i, int par, int subSz) {
-    int ret = -1;
-    for (auto e: adj[i]) {
-        if (e == par || rem[e])
-            continue;
-        ret = max(ret, getCen(e, i, subSz));
+int getCen(int u, int p, int curSz) {
+    for (auto v: adj[u]) {
+        if (rem[v] || v == p)continue;
+        if (sz[v] * 2 > curSz)
+            return getCen(v, u, curSz);
     }
-    int mx = subSz - sz[i];
-    for (auto e: adj[i]) {
-        if (e == par || rem[e])
-            continue;
-        mx = max(mx, sz[e]);
-    }
-    if (mx <= subSz / 2) 
-        ret = i;
-    return ret;
+    return u;
 }
 
 ll solve(int v, int par, int d) {
